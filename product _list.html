@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Product Listing with Filter & Sort</title>
+  <style>
+    body {
+  font-family: 'Segoe UI', sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 1100px;
+  margin: auto;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.controls input, .controls select, .controls button {
+  padding: 8px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 15px;
+}
+
+.product-card {
+  background: #e3f2fd;
+  padding: 15px;
+  border-radius: 10px;
+  text-align: center;
+  transition: 0.3s;
+}
+
+.product-card:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.product-card h3 {
+  margin-bottom: 10px;
+}
+
+.product-card p {
+  margin: 4px 0;
+}
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>🛍️ Product Listing</h1>
+
+    <!-- Filter & Sort Controls -->
+    <div class="controls">
+      <select id="categoryFilter">
+        <option value="all">All Categories</option>
+        <option value="electronics">Electronics</option>
+        <option value="clothing">Clothing</option>
+        <option value="books">Books</option>
+      </select>
+
+      <input type="number" id="minPrice" placeholder="Min Price">
+      <input type="number" id="maxPrice" placeholder="Max Price">
+
+      <select id="sortBy">
+        <option value="default">Sort By</option>
+        <option value="priceLow">Price: Low to High</option>
+        <option value="priceHigh">Price: High to Low</option>
+        <option value="ratingHigh">Rating: High to Low</option>
+      </select>
+
+      <button onclick="applyFilters()">Apply</button>
+    </div>
+
+    <!-- Product List -->
+    <div class="product-list" id="productList"></div>
+  </div>
+
+  <script>
+    const products = [
+  { name: "Smartphone", category: "electronics", price: 12000, rating: 4.3 },
+  { name: "Laptop", category: "electronics", price: 45000, rating: 4.7 },
+  { name: "T-Shirt", category: "clothing", price: 499, rating: 4.0 },
+  { name: "Jeans", category: "clothing", price: 999, rating: 4.2 },
+  { name: "JavaScript Book", category: "books", price: 650, rating: 4.5 },
+  { name: "Fiction Novel", category: "books", price: 300, rating: 3.9 }
+];
+
+function displayProducts(list) {
+  const productList = document.getElementById("productList");
+  productList.innerHTML = "";
+
+  if (list.length === 0) {
+    productList.innerHTML = "<p>No products found.</p>";
+    return;
+  }
+
+  list.forEach(product => {
+    const div = document.createElement("div");
+    div.className = "product-card";
+    div.innerHTML = `
+      <h3>${product.name}</h3>
+      <p>Category: ${product.category}</p>
+      <p>Price: ₹${product.price}</p>
+      <p>Rating: ⭐ ${product.rating}</p>
+    `;
+    productList.appendChild(div);
+  });
+}
+
+function applyFilters() {
+  let filtered = [...products];
+
+  // Category Filter
+  const category = document.getElementById("categoryFilter").value;
+  if (category !== "all") {
+    filtered = filtered.filter(p => p.category === category);
+  }
+
+  // Price Filter
+  const minPrice = parseFloat(document.getElementById("minPrice").value) || 0;
+  const maxPrice = parseFloat(document.getElementById("maxPrice").value) || Infinity;
+  filtered = filtered.filter(p => p.price >= minPrice && p.price <= maxPrice);
+
+  // Sorting
+  const sortBy = document.getElementById("sortBy").value;
+  if (sortBy === "priceLow") {
+    filtered.sort((a, b) => a.price - b.price);
+  } else if (sortBy === "priceHigh") {
+    filtered.sort((a, b) => b.price - a.price);
+  } else if (sortBy === "ratingHigh") {
+    filtered.sort((a, b) => b.rating - a.rating);
+  }
+
+  displayProducts(filtered);
+}
+
+// Initial load
+window.onload = () => {
+  displayProducts(products);
+};
+
+  </script>
+</body>
+</html>
